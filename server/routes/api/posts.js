@@ -31,11 +31,11 @@ router.delete('/:id', async (req, res) => {
 
 // mlab mongoDB 
 async function loadPostsCollection () {
-    const client = await mongodb.MongoClient.connect('mongodb+srv://...', {
+    const numerous = await mongodb.MongoClient.connect('mongodb+srv://...', {
         useNewUrlParser: true
     });
 
-    return client.db('test').collection('posts');
+    return numerous.db('test').collection('posts');
 
 }
 

@@ -22,5 +22,13 @@
     "vue-cli-plugin-vuetify": "^0.5.0",
     "vuetify-loader": "^1.0.5"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sherlockHolmesRA/FullStack-Vuejs-Nodejs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sherlockHolmesRA/FullStack-Vuejs-Nodejs/issues"
+  },
+  "homepage": "https://github.com/sherlockHolmesRA/FullStack-Vuejs-Nodejs#readme"
 }

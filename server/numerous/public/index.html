@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Operations Table</title>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet" type="text/css">
+  <link href="https://unpkg.com/vuetify/dist/vuetify.min.css" rel="stylesheet" type="text/css">
+  </link>
+  <link href="styles.css" rel="stylesheet" type="text/css">
+  <!--<link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">-->
+</head>
+
+<body>
+  
+  
+  <div id="chartpanel" class="row" data-equalizer>
+    <div class="column small-12 left_panel">
+      <header data-equalizer-watch>
+        <i class="fa fa-bars menu_top_icon" aria-hidden="true"></i>
+        
+        <charttitle></charttitle>
+      </header>
+      
+      
+      <div id="chart_table">
+        <form id="chart_datas">
+          <div class="grid-container">
+            <div class="grid-x grid-padding-x input_wrp">
+              <div class="large-8 cell column">
+                <label>
+                  <input type="number" placeholder="insert number" v-model="value" id="value" name="value">
+                </label>
+              </div>
+            </div>
+
+            <div class="addRowBtn" v-on:click.prevent="addRow" value>
+              <i class="fa fa-plus" aria-hidden="true"></i>
+            </div>
+          </div>
+        </form>
+
+        <charttable v-bind:proplabels="labels"></charttable>
+      
+       <table id="secondTable">
+  <thead>
+    <tr>
+      <th id="tablelist">Liste des nombres</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><input type="number" id="col"></td>
+    </tr>
+  </tbody>
+</table>
+        
+        <button class="operationBtns small-12 medium-12 large-12 col" color="success" v-on:click.prevent="moyenneFct">Moyenne</button>
+        <label>
+            <input type="number" placeholder="Moyenne" id="moy" name="moyenne">
+          </label>
+        <button class="operationBtns small-12 medium-12 col" color="success" v-on:click.prevent="medianFct">Median</button>
+        <label>
+            <input type="number" placeholder="Median" id="med" name="median">
+          </label>
+        
+        <button class="operationBtns small-12 medium-12 col" color="success" v-on:click.prevent="multiplicationFct">Multiply by</button>
+        
+        <button class="operationBtns small-12 medium-12 col" color="success" v-on:click.prevent="additionFct">Add</button>
+        
+        <button class="operationBtns small-12 medium-12 col" color="success" v-on:click.prevent="soustractionFct">Retreive</button>
+        
+        <button class="operationBtns small-12 medium-12 col" color="success" v-on:click.prevent="divisionFct">Devide by</button>
+        
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/vue/dist/vue.js"></script>
+  <script src="https://unpkg.com/vuetify/dist/vuetify.js"></script>
+  
+  <script>
+    Vue.component("charttitle", {
+  data() {
+    return {
+      message: "OPERATIONS",
+      collapsed: true
+    };
+  },
+  template: `
+<div id ="chart_title">
+    <h2>{{ message }} <button class="hideshow" v-on:click=" collapsed = !collapsed"><i class="fa fa-pencil" aria-hidden="true"></i></button></h2>
+<label>
+    <input v-model="message" placeholder="Insert the chart title" v-bind:class="[ {'is-collapsed' : collapsed }, 'inputHide' ]" type="text">
+    </label>
+  </div>
+`
+});
+
+/* Second header */
+
+Vue.component("chartsubtitle", {
+  data() {
+    return {
+      message: "Data reports",
+      collapsed: true
+    };
+  },
+  template: `
+<div id ="chart_subtitle">
+    <label>
+    <input right_nav v-model="message" placeholder="Insert the chart title" v-bind:class="[ {'is-collapsed' : collapsed }, 'inputHide' ]" type="text">
+    </label>
+    <h2>{{ message }} <button class="hideshow" v-on:click=" collapsed = !collapsed"><i class="fa fa-pencil" aria-hidden="true"></i></button></h2>
+  </div>
+`
+});
+
+Vue.component("charttable", {
+  props: ["proplabels"],
+  data() {
+    return {
+      disabled: true
+    };
+  },
+  methods: {
+    deleteEvent: function(index) {
+      this.proplabels.splice(index, 1);
+    }
+  },
+  template: `
+<div id="chart_table">
+        <div class="top_titles"> 
+            <div class="small-10 medium-8 column"> Value </div>
+<div class="small-4 medium-2 column">
+                Delete
+            </div>
+<div class="small-4 medium-2 column">Edit
+            </div>
+        </div>
+    <div v-for="(val, index)al in proplabels" class="row table_cell">
+        <div  class="small-10 medium-8 column single-cel">
+            <input type="number" v-model="val.percentual" v-bind:disabled="disabled">
+            </input>
+        </div>
+        <div class="small-2 medium-2 column edit_panel">
+            <button @click="deleteEvent(index)">
+                <i class="fa fa-trash" aria-hidden="true"></i>
+            </button>
+</div>
+<div class="small-2 medium-2 column edit_panel">
+<span class="edit_mode" @click="disabled = !disabled">
+                <i class="fa fa-pencil-square-o edit" aria-hidden="true"></i>
+            </span>
+        </div>
+    </div>
+</div>
+
+`
+});
+
+new Vue({
+  el: "#chartpanel",
+  data: {
+    moy: "",
+    value: "",
+    icon: "",
+    labels: [],
+    nextBarId: 1,
+    numbers: []
+  },
+  computed: {},
+  methods: {
+    addRow: function(event) {
+      lastId = this.labels.length;
+      var newRow = {
+        id: this.nextBarId++,
+        percentual: this.value
+      };
+      this.labels.push(newRow);
+      
+      document.getElementById('col').value = this.value;
+    },
+
+    moyenneFct: function() {
+      var tabVal4 = [25, 19, 63, 45, 8, 165];
+      var tabLength = tabVal4.length;
+      var somme = 0;
+
+      for (let i = 0; i < tabLength; i++) {
+        somme += tabVal4[i];
+      }
+
+      moyenne = Math.floor(somme / tabLength);
+      console.log(moyenne);
+      document.getElementById('moy').value = moyenne;
+    },
+    
+    medianFct: function(values){
+      var values = [3, 8, 9, 1, 5, 7, 9, 21];
+            var nums = [...values].sort((a, b) => a - b);
+            var mid = Math.floor(values.length / 2);
+var res = values.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
+            console.log(res);
+      document.getElementById('med').value = res;
+        },
+    additionFct: function(num) {
+            var tabVal = [25, 19, 63, 45, 8, 165];
+            var tab = [];
+
+            tabVal.forEach((item) => {
+                tab.push(item + num);
+            });
+            console.log(tab);
+            return tab;
+        },
+    soustractionFct: function(num) {
+            var tabVal2 = [25, 19, 63, 45, 8, 165];
+            var tab2 = [];
+
+            tabVal2.forEach((item) => {
+                tab2.push(item - num);
+            });
+            console.log(tab2);
+            return tab2;
+        },
+       multiplicationFct: function(num) {
+            var tabVal3 = [25, 19, 63, 45, 8, 165];
+            var tab3 = [];
+
+            tabVal3.forEach((item) => {
+                tab3.push(item * num);
+            });
+            console.log(tab3);
+            return tab3;
+        },
+       divisionFct: function(num) {
+            var tabVal4 = [25, 19, 63, 45, 8, 165];
+            var tab4 = [];
+
+            tabVal4.forEach((item) => {
+                tab4.push(item / num);
+            });
+            console.log(tab4);
+            return tab4;
+        }
+  }
+});
+  </script>
+</body>
+
+</html>
